@@ -32,3 +32,13 @@ npm run dev
 
 The frontend will be available at <http://localhost:5173> and proxies API calls to
 localhost:5000 where the Flask server runs.
+
+## Development
+
+Execute estes comandos para verificar o projeto antes de commitar:
+
+```bash
+python3 -m py_compile backend/app.py backend/models.py
+npm install --prefix frontend
+npm run build --prefix frontend
+```

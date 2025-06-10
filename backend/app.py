@@ -16,6 +16,20 @@ CORS(app)
 
 db.init_app(app)
 
+def init_db():
+    """Create tables and insert sample data if the database is empty."""
+    with app.app_context():
+        db.create_all()
+        if not Fornecedor.query.first():
+            sup = Fornecedor(razaosocial='Fornecedor Exemplo', nomefantasia='Exemplo Ltda')
+            prod = Produto(descricaocompleta='Produto Exemplo', descricaoreduzida='Prod Ex', qtdembalagem=1)
+            db.session.add_all([sup, prod])
+            db.session.flush()
+            comp = ProdutoComplemento(id_produto=prod.id, id_loja=1, estoque=10)
+            db.session.add(comp)
+            db.session.commit()
+
+
 @app.route('/api/suppliers')
 def get_suppliers():
     suppliers = Fornecedor.query.all()
@@ -87,4 +101,5 @@ def list_orders():
     return jsonify(result)
 
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)

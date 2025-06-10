@@ -31,4 +31,5 @@ cp ../.env.example ../.env  # apenas se ainda não existir
 python app.py
 ```
 
-The API will listen on port 5000.
+The API will listen on port 5000. Na primeira execução o banco é criado
+automaticamente com um fornecedor e um produto de exemplo.
