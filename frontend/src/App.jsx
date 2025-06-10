@@ -390,19 +390,34 @@ const MultiOrderScreen = ({ suppliers, onBack, onFinalize }) => {
   // Inicializa os dados da grade
   useEffect(() => {
     const supplierIds = suppliers.map(s => s.id);
-    const productsForGrid = mockProducts
-      .filter(p => p.suppliers.some(s => supplierIds.includes(s.id)))
-      .map(p => {
-        const bestSupplier = p.suppliers
-          .filter(s => supplierIds.includes(s.id))
-          .sort((a, b) => a.cost - b.cost)[0];
-        return {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => {
+        const productsForGrid = data.map(p => ({
           ...p,
+          suppliers: supplierIds.map(id => ({ id, cost: 0 })),
           orderQty: '',
-          winnerSupplierId: bestSupplier ? String(bestSupplier.id) : '',
-        };
+          winnerSupplierId: supplierIds[0] ? String(supplierIds[0]) : '',
+          alerts: [],
+          priority: 'A'
+        }));
+        setGridData(productsForGrid);
+      })
+      .catch(() => {
+        const productsForGrid = mockProducts
+          .filter(p => p.suppliers.some(s => supplierIds.includes(s.id)))
+          .map(p => {
+            const bestSupplier = p.suppliers
+              .filter(s => supplierIds.includes(s.id))
+              .sort((a, b) => a.cost - b.cost)[0];
+            return {
+              ...p,
+              orderQty: '',
+              winnerSupplierId: bestSupplier ? String(bestSupplier.id) : '',
+            };
+          });
+        setGridData(productsForGrid);
       });
-    setGridData(productsForGrid);
   }, [suppliers]);
 
   // Manipula mudanças na grade
@@ -665,8 +680,15 @@ const MultiOrderScreen = ({ suppliers, onBack, onFinalize }) => {
 // Componentes restantes (NewOrderStartScreen, OrderAgentScreen, App) permanecem iguais
 
 const NewOrderStartScreen = ({ onStart }) => {
-  const [suppliers, setSuppliers] = useState(mockSuppliers);
+  const [suppliers, setSuppliers] = useState([]);
   const [selected, setSelected] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/suppliers')
+      .then(res => res.json())
+      .then(data => setSuppliers(data))
+      .catch(() => setSuppliers(mockSuppliers));
+  }, []);
 
   const toggle = id => {
     setSelected(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);

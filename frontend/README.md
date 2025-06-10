@@ -1,7 +1,9 @@
 # Frontend
 
 This directory contains a React application built with Vite. It communicates with the Flask
-backend to list products and suppliers and to create purchase orders.
+backend to list products and suppliers and to create purchase orders. The interface fetches
+the supplier and product data from `/api/suppliers` and `/api/products` when you start a new
+order.
 
 ## Usage
 
